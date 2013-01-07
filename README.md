@@ -125,10 +125,9 @@ require 'heroku-forward'
 
 application = File.expand_path('../my_app.ru', __FILE__)
 backends = []
-backend << Heroku::Forward::Backends::Thin.new(application: application, env: env)
-backend << Heroku::Forward::Backends::Thin.new(application: application, env: env)
-backend << Heroku::Forward::Backends::Thin.new(application: application, env: env)
-backend << Heroku::Forward::Backends::Thin.new(application: application, env: env)
+backends << Heroku::Forward::Backends::Thin.new(application: application, env: env)
+backends << Heroku::Forward::Backends::Thin.new(application: application, env: env)
+backends << Heroku::Forward::Backends::Thin.new(application: application, env: env)
 
 # The timeout is the number of seconds for each backend to spin up before it is considered dead.
 # Be aware that in some situations the more backends you have the slower they will spin up.
@@ -138,7 +137,7 @@ proxy.logger = Logger.new(STDOUT)
 proxy.forward!
 ```
 
-This sets up a proxy on the port requested by Heroku and runs your application with Thin.
+This sets up a proxy on the port requested by Heroku and runs your application on three Thin instances.
 
 Reading Materials
 -----------------
