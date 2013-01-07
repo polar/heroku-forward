@@ -22,7 +22,7 @@ Jeweler::Tasks.new do |gem|
   gem.summary = "Beat Heroku's 60s boot timeout with a forward proxy."
   gem.email = "dblock@dblock.org"
   gem.version = Heroku::Forward::VERSION
-  gem.authors = [ "Daniel Doubrovkine" ]
+  gem.authors = [ "Daniel Doubrovkine", "Dr. Polar Humenn (MultiBackend)" ]
   gem.files = Dir.glob('lib/**/*')
 end
 

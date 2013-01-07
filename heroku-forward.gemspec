@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Daniel Doubrovkine"]
-  s.date = "2012-12-13"
+  s.authors = ["Daniel Doubrovkine", "Dr. Polar Humenn (MultiBackend)"]
+  s.date = "2013-01-07"
   s.email = "dblock@dblock.org"
   s.extra_rdoc_files = [
     "LICENSE.md",
@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     "lib/heroku/forward/errors/missing_backend_application_error.rb",
     "lib/heroku/forward/errors/missing_backend_option_error.rb",
     "lib/heroku/forward/proxy.rb",
+    "lib/heroku/forward/proxy/multi_backend_server.rb",
     "lib/heroku/forward/proxy/server.rb",
     "lib/heroku/forward/version.rb"
   ]
