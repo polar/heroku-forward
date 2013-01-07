@@ -3,16 +3,15 @@ module Heroku
     module Proxy
 
       class MultiBackendServer
-        attr_reader :host, :port, :retries
+        attr_reader :host, :port
         attr_accessor :logger
 
         def initialize(backends, options = {})
           @host = options[:host] || '0.0.0.0'
           @port = options[:port] || 3000
-          @retries = options[:retries] || 10
-          @logger = options[:logger] || Logger.new(STDOUT)
+          @logger = options[:logger]
           @timeout = options[:timeout] || 80
-          @backends = backends.map {|b| Backend.new(:backend => b, :logger => @logger, :retries => @retries, :timeout => @timeout )}
+          @backends = backends.map {|b| Backend.new(:backend => b, :logger => @logger, :timeout => @timeout )}
         end
 
         class Backend
@@ -23,7 +22,6 @@ module Heroku
             @backend = options[:backend]
             @logger = options[:logger]
             @timeout = options[:timeout] || 80
-            @retries = options[:retries] || 10
             @dead = false
             @load = 0
           end
@@ -80,7 +78,7 @@ module Heroku
           def establish_connection
             @connecting_to_socket = true
             start_time = Time.now
-            while(Time.now - start_time < @timeout )
+            while(@timeout.nil? || Time.now - start_time < @timeout )
               begin
                 b = self
                 srv = EventMachine::connect_unix_domain(self.socket, EventMachine::Connection, true) do |c|
