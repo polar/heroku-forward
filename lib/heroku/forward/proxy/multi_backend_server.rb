@@ -10,7 +10,7 @@ module Heroku
           @host = options[:host] || '0.0.0.0'
           @port = options[:port] || 3000
           @logger = options[:logger]
-          @timeout = options[:timeout] || 80
+          @timeout = options[:timeout]
           @backends = backends.map {|b| Backend.new(:backend => b, :logger => @logger, :timeout => @timeout )}
         end
 
@@ -21,7 +21,7 @@ module Heroku
           def initialize(options = {})
             @backend = options[:backend]
             @logger = options[:logger]
-            @timeout = options[:timeout] || 80
+            @timeout = options[:timeout]
             @dead = false
             @load = 0
           end
