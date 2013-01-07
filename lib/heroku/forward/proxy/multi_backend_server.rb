@@ -142,11 +142,12 @@ module Heroku
           b = @backends.select {|b| b.ready?}.reduce() { |t,v| t.load <= v.load ? t : v }
           # If there is no connection wait a bit and try again.
           if b
+            prev_load = b.load
             if b.connect(conn)
               return
             else
-              # This request is already toast. Just ignore.
-              b.load -= 1
+              # This request is already toast. Just ignore, reset load.
+              b.load = prev_load
             end
           else
             s = self
