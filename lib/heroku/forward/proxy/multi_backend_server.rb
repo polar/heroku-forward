@@ -113,7 +113,6 @@ module Heroku
 
             conn.on_data do |data|
               logger.debug "OnData for Backend ready at #{backend.socket} on Connection #{conn} load #{b.load}." if logger
-              pp data
               data
             end
 
