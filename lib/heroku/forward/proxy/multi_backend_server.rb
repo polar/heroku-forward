@@ -80,7 +80,7 @@ module Heroku
           def establish_connection
             @connecting_to_socket = true
             start_time = Time.now
-            while(Time.now - start_time < @timeout.seconds)
+            while(Time.now - start_time < @timeout )
               begin
                 b = self
                 srv = EventMachine::connect_unix_domain(self.socket, EventMachine::Connection, true) do |c|
