@@ -12,6 +12,8 @@ module Heroku
           @logger = options[:logger]
           @timeout = options[:timeout]
           @backends = backends.map {|b| Backend.new(:backend => b, :logger => @logger, :timeout => @timeout )}
+          @rejection_data = options[:rejection_data]
+          @delay = options[:delay]
         end
 
         class Backend
@@ -155,9 +157,24 @@ module Heroku
             EM.next_tick do
               #logger.info "Server: next_tick #{conn}." if logger
               sleep 1
-              s.on_connection(conn)
+              if @rejection_data
+                s.reject_connection(conn)
+              else
+                s.on_connection(conn)
+              end
             end
           end
+        end
+
+        class RejectConnection < EventMachine::Connection
+          def receive_data(data)
+            send_data @rejection_data
+            close_connection(true)
+          end
+        end
+
+        def reject_connection(conn)
+          conn.server RejectConnection.new(@rejection_data)
         end
 
         #
@@ -171,6 +188,11 @@ module Heroku
             i += 1
             backend.launch!
             logger.info "Launching Backend #{i} at #{backend.socket}." if logger
+          end
+
+          if @delay && (delay = @delay.to_i) > 0
+            logger.info "Waiting #{delay}s to Launch Proxy Server ..." if logger
+            sleep delay
           end
 
           logger.info "Launching Proxy Server at #{host}:#{port} ..." if logger
