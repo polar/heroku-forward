@@ -166,15 +166,9 @@ module Heroku
           end
         end
 
-        class RejectConnection < EventMachine::Connection
-          def receive_data(data)
-            send_data @rejection_data
-            close_connection(true)
-          end
-        end
-
         def reject_connection(conn)
-          conn.server RejectConnection.new(@rejection_data)
+          conn.send_data @rejection_data
+          conn.close_connection(true)
         end
 
         #
