@@ -106,7 +106,6 @@ Features:
 * Can supply your own rejection response(page) until backends spin up.
 * If rejection_data is supplied, proxy rejects connections with rejection_data until backends spin up.
 * If no rejection_data is supplied, proxy queues all connections until backends spin up.
-
     Note: the Heroku Router might still reject the connection with their own ApplicationError page if not
 connected in time.
 * Proxy queues connections onto backends with the least load of queued connections.
