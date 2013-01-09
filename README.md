@@ -112,6 +112,15 @@ connected in time.
 * Backends may die. If one dies, it is removed from the pool.
 * Whole app aborts only if the last remaining backend dies.
 
+### MultiBackendServer Options
+
+`Heroku::Forward::Proxy::MultiBackendServer` accepts the following options:
+
+* `host` : local IP, usually 0.0.0.0
+* `port` : local PORT, should be the one Heroku issues.
+* `rejection_data` : The rejection HTTP response given to connections if no backends are spun up yet.
+* `timeout` : number of seconds from startup until spin up before a backend is considered dead.
+* `delay`: number of seconds to sleep before launching the proxy, eg. `proxy.forward!(delay: 15)`. This prevents queuing of requests or reporting invalid `up` status to Heroku. It's recommended to set this value to as close as possible to the boot time of your application and less than the Heroku's 60s boot limit.
 
 Rejection Data, which in the following configuration file is stored in `Rails.root/public/503.http`,
 contains the header as well as the page. It is the full HTTP response.
