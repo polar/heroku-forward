@@ -102,10 +102,32 @@ Multiple Backends
 
 Features:
 
-* Queues all connections until backends spin up.
-* Queues connections onto backends with the least load of queued connections.
+* The Heroku Router queues connections until proxy comes up.
+* Can supply your own rejection response(page) until backends spin up.
+* If rejection_data is supplied, proxy rejects connections with rejection_data until backends spin up.
+* If no rejection_data is supplied, proxy queues all connections until backends spin up.
+* * Note, that the Heroku Router might still reject the connection with their own ApplicationError page if not
+    connected in time.
+* Proxy queues connections onto backends with the least load of queued connections.
 * Backends may die. If one dies, it is removed from the pool.
-* Aborts only if the last remaining backend dies.
+* Whole app aborts only if the last remaining backend dies.
+
+
+Rejection Data, which in the following configuration file is stored in `Rails.root/public/503.http`,
+contains the header as well as the page. It is the full HTTP response.
+
+``` html
+HTTP/1.0 503 Service Temporarily Unavailable
+Content-Type: text/HTML
+Content-Length: 87
+
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Service Temporarily Unavailable</h1>
+</body>
+</html>
+```
 
 Modify your rackup file as follows. Under Rails this file is called `config.ru`.
 
@@ -123,6 +145,9 @@ require 'em-proxy'
 require 'logger'
 require 'heroku-forward'
 
+rejection_filename = File.expand_path('../public/503.http', __FILE__)
+rejection_data     = File.open(rejection_filename).read
+
 application = File.expand_path('../my_app.ru', __FILE__)
 backends = []
 backends << Heroku::Forward::Backends::Thin.new(application: application, env: env)
@@ -132,7 +157,13 @@ backends << Heroku::Forward::Backends::Thin.new(application: application, env: e
 # The timeout is the number of seconds for each backend to spin up before it is considered dead.
 # Be aware that in some situations the more backends you have the slower they will spin up.
 
-proxy = Heroku::Forward::Proxy::MultiBackendServer.new(backends, { host: '0.0.0.0', port: port, timeout:80 })
+proxy = Heroku::Forward::Proxy::MultiBackendServer.new(backends, {
+                                host: '0.0.0.0',
+                                port: port,
+                                timeout:80,
+                                delay: 30
+                                rejection_data: rejection_data
+                            })
 proxy.logger = Logger.new(STDOUT)
 proxy.forward!
 ```
