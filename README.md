@@ -120,10 +120,10 @@ connected in time.
 * `port` : local PORT, should be the one Heroku issues.
 * `rejection_data` : The rejection HTTP response given to connections if no backends are spun up yet.
 * `timeout` : number of seconds from startup until spin up before a backend is considered dead.
-* `delay`: number of seconds to sleep before launching the proxy, eg. `proxy.forward!(delay: 15)`. This prevents queuing of requests or reporting invalid `up` status to Heroku. It's recommended to set this value to as close as possible to the boot time of your application and less than the Heroku's 60s boot limit.
+* `delay`: number of seconds to sleep before launching the proxy. The delay causes queuing of requests by
+    Heroku until the Heroku Router times out the connection. Should be set to less than the 60 second timeout.
 
-Rejection Data, which in the following configuration file is stored in `Rails.root/public/503.http`,
-contains the header as well as the page. It is the full HTTP response.
+Rejection Data contains the header as well as the page. It must contain the full HTTP response.
 
 ``` html
 HTTP/1.0 503 Service Temporarily Unavailable
