@@ -137,8 +137,8 @@ module Heroku
         # We decide which backend to give it to.
         # TODO: A factory to recreate backends in the event that they die.
         def on_connection(conn)
-          logger.debug "Server:on_connection #{conn}" if logger
           @backends.delete_if { |b| b.dead? }
+          logger.debug "Server:on_connection #{conn} backends #{@backends.count} loads #{@backends.map {|x| x.load}.inspect}" if logger
           raise ::Heroku::Forward::Errors::BackendFailedToStartError.new if @backends.empty?
           # Find the one with the minimum load.
           b = @backends.select {|b| b.ready?}.reduce() { |t,v| t.load <= v.load ? t : v }
