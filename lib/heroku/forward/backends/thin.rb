@@ -23,8 +23,8 @@ module Heroku
         def spawn!
           return false if spawned?
           check!
-          log_arg = @logfile ? "--log '#{@logfile}'" : ""
-          @pid = spawn("thin start -R #{@application} --socket #{@socket} #{log_arg} -e #{@env}")
+          log_arg = @logfile ? "2>&1 > '#{@logfile}'" : ""
+          @pid = spawn("thin start -R #{@application} --socket #{@socket} -e #{@env} #{log_arg} ")
           @spawned = true
         end
 
