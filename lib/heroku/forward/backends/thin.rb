@@ -16,13 +16,15 @@ module Heroku
         def initialize(options = {})
           @application = options[:application]
           @socket = options[:socket] || new_socket
+          @logfile = options[:log]
           @env = options[:env] || :development
         end
 
         def spawn!
           return false if spawned?
           check!
-          @pid = spawn("thin start -R #{@application} --socket #{@socket} -e #{@env}")
+          log_arg = @logfile ? "--log '#{@logfile}'" : ""
+          @pid = spawn("thin start -R #{@application} --socket #{@socket} #{log_arg} -e #{@env}")
           @spawned = true
         end
 
